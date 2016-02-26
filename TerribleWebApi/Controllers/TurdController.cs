@@ -11,40 +11,66 @@ namespace TerribleWebApi.Controllers
     //[Authorize]
     public class TurdController : ApiController
     {
-        // GET api/values
-        [Route("api/turds/all"), HttpGet]
-        public IEnumerable<Turd> Get()
+        private static List<Turd> _turds = new List<Turd>
         {
-            yield return new Turd
+            new Turd
             {
+                Id = 1,
                 SmellCoefficient = 99,
                 Width = 2,
                 Girth = 090,
                 Length = 234,
                 NumberOfCornKernels = 1,
                 LookupTable = new Dictionary<int, int> { { 1, 3 }, { 2, 4 } }
-            };
+            },
 
-            yield return new Turd
+            new Turd
             {
+                Id = 2,
                 SmellCoefficient = 1,
                 Width = 2,
                 Girth = 1,
                 Length = 234,
                 NumberOfCornKernels = 100,
                 StrangeObjects = new List<string> {  "Baseball", "Battery", "Banana"}
-            };
+            },
+        };
+
+        // GET api/values
+        [Route("api/turds/all"), HttpGet]
+        public IEnumerable<Turd> Get()
+        {
+            return _turds;
         }
 
         // GET api/values/5
-        public string Get(int id)
+        public HttpResponseMessage Get(int id)
         {
-            return "value";
+            var turd = _turds.FirstOrDefault(t => t.Id == id);
+            if (turd == null)
+                return Request.CreateResponse(HttpStatusCode.NotFound);
+
+            return Request.CreateResponse(turd);
         }
 
-        // POST api/values
-        public void Post([FromBody]string value)
+        [Route("api/turd/{id}/less"), HttpPost]
+        public HttpResponseMessage LessSmelly(int id, int amount = 10)
         {
+            var turd = _turds.FirstOrDefault(t => t.Id == id);
+            if (turd == null)
+                return Request.CreateResponse(HttpStatusCode.NotFound);
+
+            turd.SmellCoefficient -= amount;
+            return Request.CreateResponse(HttpStatusCode.NoContent);
+        }
+        
+        public HttpResponseMessage Post([FromBody]Turd turd)
+        {
+            if (turd == null)
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+
+            _turds.Add(turd);
+            return Request.CreateResponse(HttpStatusCode.NoContent);
         }
 
         // PUT api/values/5

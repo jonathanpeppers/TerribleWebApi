@@ -7,6 +7,8 @@ namespace TerribleWebApi.Models
 {
     public class Turd
     {
+        public int Id { get; set; }
+
         public int SmellCoefficient { get; set; }
 
         public int NumberOfCornKernels { get; set; }
